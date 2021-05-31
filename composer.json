@@ -1,7 +1,8 @@
 {
     "name": "nordkirche/nk-google-map",
     "type": "typo3-cms-extension",
-    "description": "",
+    "description": "TYPO3 Extension für die Darstellung von Karten mit Markern aus der NAPI",
+    "license": "GPL-2.0",
     "author": [
         {
             "name": "Holger McCloy",
