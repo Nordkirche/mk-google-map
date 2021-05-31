@@ -1,0 +1,37 @@
+plugin.tx_nkgooglemap_pi1 {
+    view {
+        templateRootPaths.0 = EXT:nk_google_map/Resources/Private/Templates/
+        templateRootPaths.1 = {$plugin.tx_nkgooglemap_pi1.view.templateRootPath}
+        partialRootPaths.0 = EXT:nk_google_map/Resources/Private/Partials/
+        partialRootPaths.1 = {$plugin.tx_nkgooglemap_pi1.view.partialRootPath}
+        layoutRootPaths.0 = EXT:nk_google_map/Resources/Private/Layouts/
+        layoutRootPaths.1 = {$plugin.tx_nkgooglemap_pi1.view.layoutRootPath}
+
+        widget.Nordkirche\NkGoogleMap\ViewHelpers\Widget\GoogleMapViewHelper.templateRootPaths.0 = EXT:nk_google_map/Resources/Private/Templates/
+    }
+    persistence {
+        storagePid = {$plugin.tx_nkgooglemap_pi1.persistence.storagePid}
+        #recursive = 1
+    }
+    features {
+    }
+    mvc {
+        callDefaultActionIfActionCantBeResolved = 1
+    }
+    settings {
+    }
+}
+
+page {
+    includeJSFooterlibs {
+        gmapsApi = https://maps.googleapis.com/maps/api/js?key={$plugin.tx_nkgooglemap_pi1.googleMapsApiKey}
+        gmapsApi.external = 1
+        jquery = https://code.jquery.com/jquery-3.6.0.min.js
+        jquery.external = 1
+
+    }
+    includeJSFooter {
+        nk_google_map_markercluster = EXT:nk_google_map/Resources/Public/JavaScript/markerclusterer.js
+        nk_google_map_app = EXT:nk_google_map/Resources/Public/JavaScript/app.js
+    }
+}
