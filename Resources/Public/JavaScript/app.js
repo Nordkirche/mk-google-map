@@ -1,4 +1,4 @@
-var map = [], markers = [], mapBounds = [], clusterer = [];
+var map = [], markers = [], mapBounds = [], clusterer = [], requestId;
 
 var fitOnClick = [];
 
@@ -300,6 +300,7 @@ var mapStyle = [
 
 $(document).ready(function() {
 
+    var asycMarkerInfo = false;
     var infoWindow = new google.maps.InfoWindow({maxWidth: 400, maxHeight: 400});
     var clusterStyles = [];
 
@@ -344,9 +345,9 @@ $(document).ready(function() {
 
         if (homogene) {
             clusterStyles.forEach(function(style, styleIndex) {
-              if (style.type == currentType) {
-                  index = styleIndex + 1;
-              }
+                if (style.type == currentType) {
+                    index = styleIndex + 1;
+                }
             });
         } else {
             clusterStyles.forEach(function(style, styleIndex) {
@@ -381,12 +382,23 @@ $(document).ready(function() {
             type: pointOfInterest.type
         });
 
-        marker.infoText = pointOfInterest.info;
+        // If info is delivered, add it to maker.
+        // Else add item type and id to marker for async loading
+        if (pointOfInterest.info) {
+            marker.infoText = pointOfInterest.info;
+        } else {
+            asycMarkerInfo = true;
+            marker.infoText = pointOfInterest.object + ':' + pointOfInterest.id;
+        }
 
         google.maps.event.addListener(marker, 'click', function() {
             infoWindow.close();
-            infoWindow.open(map, marker);
-            infoWindow.setContent(marker.infoText);
+            if (asycMarkerInfo) {
+                loadMarkerInfo(map, marker, infoWindow, [marker.infoText]);
+            } else {
+                infoWindow.open(map, marker);
+                infoWindow.setContent(marker.infoText);
+            }
         });
 
         return marker;
@@ -395,6 +407,52 @@ $(document).ready(function() {
     // -----------------------------------------------------------------
 
 
+    function loadMarkerInfo(map, marker, infoWindow, objects) {
+        infoWindow.open(map, marker);
+        infoWindow.setContent('Lade...');
+        $.ajax({
+            url: '/marker?items=' + objects.join(),
+            success: function(result) {
+                infoWindow.close();
+                infoWindow.open(map, marker);
+                infoWindow.setContent(result);
+
+            }
+        });
+    }
+
+    // -----------------------------------------------------------------
+
+    function loadClusterMarkerInfo(map, cluster, id, infoWindow) {
+
+        var objects = cluster.getMarkers().map(function (m) {
+            return m.infoText;
+        });
+
+        infoWindow.setContent('Lade...');
+
+        infoWindow.setPosition(cluster.getCenter());
+
+        infoWindow.open(map);
+
+        $.ajax({
+            url: '/marker?items=' + objects.join(),
+            success: function(result) {
+                infoWindow.close();
+                infoWindow.open(map);
+                infoWindow.setContent(result);
+                setTimeout(
+                    function () {
+                        clusterer[id].setZoomOnClick(true);
+                    },
+                    50
+                );
+            }
+        });
+    }
+
+    // -----------------------------------------------------------------
+
     function getMapCenter(id) {
         var center;
 
@@ -402,11 +460,11 @@ $(document).ready(function() {
             center = new google.maps.LatLng(gmapConfig[id]['center']['lat'], gmapConfig[id]['center']['lon']);
         } else if ((gmapConfig[id]['center'] == 'user') && (navigator.geolocation)) {
             navigator.geolocation.getCurrentPosition(function(position) {
-                center = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-            },
-            function() {
-                center = mapBounds[id].getCenter();
-            });
+                    center = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                },
+                function() {
+                    center = mapBounds[id].getCenter();
+                });
 
         } else {
             if (markers[id].length > 500) {
@@ -515,27 +573,42 @@ $(document).ready(function() {
 
         clusterer[id] = new MarkerClusterer(map[id], markers[id], {
             gridSize: 40,
+            // maxZoom: 15,
             calculator: MarkerClusterer.nkCALCULATOR,
             styles: clusterStyles
         });
 
         google.maps.event.addListener(clusterer[id], 'clusterclick', function (cluster) {
             if (cluster.inVicinity(0.0003)) {
-                clusterer[id].setZoomOnClick(false);
-                infoWindow.close();
-                infoWindow.setContent(
-                    cluster.getMarkers().map(function(m){return m.infoText;}).join('')
-                );
-                infoWindow.setPosition(cluster.getCenter());
-                infoWindow.open(map[id]);
-                setTimeout(
-                    function(){
-                        clusterer[id].setZoomOnClick(true);
-                    },
-                    50
-                );
+                if (cluster.getMarkers().length <= 20 || checkLocation(cluster.getMarkers())) {
+                    clusterer[id].setZoomOnClick(false);
+                    infoWindow.close();
+                    if (asycMarkerInfo) {
+                        loadClusterMarkerInfo(map[id], cluster, id, infoWindow);
+                    } else {
+                        infoWindow.setContent(cluster.getMarkers().map(function (m) {
+                            return m.infoText;
+                        }).join());
+                    }
+                }
             }
         });
+    }
+
+    //
+    function checkLocation(markers) {
+        var position = false;
+        for (var i = 0; i < markers.length; ++i) {
+            marker =  markers[i];
+            if (position) {
+                if (marker.position.toString() != position.toString()) {
+                    return false;
+                }
+            } else {
+                position = marker.position;
+            }
+        };
+        return true;
     }
 
     // -----------------------------------------------------------------
@@ -574,7 +647,13 @@ $(document).ready(function() {
     // -----------------------------------------------------------------
 
     function loadMapMarkers(id, url, page) {
+
         var requestUrl = url +  '&' + gmapConfig[id]['pagination'] + '=' + page;
+
+        if (gmapConfig[id]['requestId']) {
+            requestUrl += '&' + gmapConfig[id]['requestId'] + '=' + requestId;
+        }
+
         $.getJSON(requestUrl, function(result) {
             if (result && (result.data.length > 0)) {
                 for (var i = 0, pointOfInterest; pointOfInterest = result.data[i]; i++) {
@@ -586,7 +665,7 @@ $(document).ready(function() {
                     createCluster(id);
                     $('.gmap-canvas-container[data-gmap-id="' + id + '"] .overlay').hide();
                 } else {
-                    window.setTimeout(500, loadMapMarkers(id, url, page + 1));
+                    window.setTimeout(200, loadMapMarkers(id, url, page + 1));
                 }
 
             } else {
@@ -617,6 +696,8 @@ $(document).ready(function() {
             styles: mapStyle
         });
 
+        requestId = Math.floor(Math.random() * 100) + 287661;
+
         mapBounds[id] = new google.maps.LatLngBounds();
         markers[id] = [];
 
@@ -638,7 +719,7 @@ $(document).ready(function() {
 
             } else if (gmapConfig[id]['requestUri']) {
                 $.getJSON(gmapConfig[id]['requestUri'], function(result) {
-                    if (result && result.data && (result.data.length > 0)) {
+                    if (result && (result.data.length > 0)) {
                         for (var i = 0, pointOfInterest; pointOfInterest = result.data[i]; i++) {
                             markers[id].push(addMapMarker(map[id], pointOfInterest));
                             mapBounds[id].extend(new google.maps.LatLng(pointOfInterest.lat, pointOfInterest.lon));
@@ -662,10 +743,10 @@ $(document).ready(function() {
 
             // reset all other filters
             $('.map-filter').each(function() {
-               if ($(this).data('type') != type) {
-                   $(this).val('');
-                   $(this).niceSelect('update');
-               }
+                if ($(this).data('type') != type) {
+                    $(this).val('');
+                    $(this).niceSelect('update');
+                }
             });
 
             filterMarker(id, value);

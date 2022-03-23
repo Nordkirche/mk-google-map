@@ -131,6 +131,7 @@ class GoogleMapController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCon
                 
                 gmapConfig['$mapId'] = [];
                 gmapConfig['$mapId']['markers'] = $markers;
+                gmapConfig['$mapId']['requestId'] = '$configuration[requestId]';               
                 gmapConfig['$mapId']['requestUri'] = '$requestUri';
                 gmapConfig['$mapId']['streamUri'] = '$streamUri';
                 gmapConfig['$mapId']['pagination'] = '$configuration[pagination]';
