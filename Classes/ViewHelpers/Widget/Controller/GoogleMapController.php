@@ -25,7 +25,7 @@ class GoogleMapController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCon
      */
     protected $configuration = [
         'iconBasePath' => '/typo3conf/ext/nkc_base/Resources/Public/MapIcons/',
-        'style' => 'height: 300px'
+        'style' => ''
     ];
 
     /**
