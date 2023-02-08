@@ -25,7 +25,7 @@ class GoogleMapController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCon
      */
     protected $configuration = [
         'iconBasePath' => '/typo3conf/ext/nkc_base/Resources/Public/MapIcons/',
-        'style' => 'height: 300px'
+        'style' => ''
     ];
 
     /**
@@ -99,7 +99,7 @@ class GoogleMapController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCon
     public function indexAction()
     {
         // Unique identifier
-        $mapId = uniqid('', true);
+        $mapId = uniqid();
 
         $this->view->assignMultiple([
             'requestUri' 	=> $this->getRequestUri(),
@@ -125,12 +125,13 @@ class GoogleMapController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCon
     {
         $code = "
         <script language=\"JavaScript\">
-                if (undefined === gmapConfig) { 
-                    var gmapConfig = [];    
+                if (undefined === gmapConfig) {
+                    var gmapConfig = [];
                 }
-                
+
                 gmapConfig['$mapId'] = [];
                 gmapConfig['$mapId']['markers'] = $markers;
+                gmapConfig['$mapId']['requestId'] = '$configuration[requestId]';
                 gmapConfig['$mapId']['requestUri'] = '$requestUri';
                 gmapConfig['$mapId']['streamUri'] = '$streamUri';
                 gmapConfig['$mapId']['pagination'] = '$configuration[pagination]';

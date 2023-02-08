@@ -17,5 +17,7 @@ call_user_func(
                 'groups' => ['nk_google_map']
             ];
         }
+
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['nk_google_map']['config_mapping'] = 'e:\\Nordkirche\\NkcEvent\\Controller\\EventController,p:\\Nordkirche\\NkcAddress\\Controller\\PersonController,i:\\Nordkirche\\NkcAddress\\Controller\\InstitutionController';
     }
 );
