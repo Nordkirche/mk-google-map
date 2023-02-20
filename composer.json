@@ -17,5 +17,10 @@
         "psr-4": {
             "Nordkirche\\NkGoogleMap\\": "Classes"
         }
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "nk_google_map"
+        }
     }
 }
