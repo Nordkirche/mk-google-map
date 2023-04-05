@@ -10,7 +10,7 @@
  * "version" and "dependencies" must not be touched!
  ***************************************************************/
 
-$EM_CONF[$_EXTKEY] = [
+$EM_CONF['nk_google_map'] = [
     'title' => 'Google Maps',
     'description' => '',
     'category' => 'plugin',
