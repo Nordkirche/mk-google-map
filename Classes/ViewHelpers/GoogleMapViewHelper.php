@@ -161,6 +161,13 @@ class GoogleMapViewHelper extends AbstractViewHelper
      */
     private function buildJsCode($requestUri, $streamUri, $markers, $configuration, $mapId, $fitOnClick)
     {
+        $configuration['requestId'] = !empty($configuration['requestId']) ?: '';
+        $configuration['pagination'] = !empty($configuration['pagination']) ?: '';
+        $configuration['iconBasePath'] = !empty($configuration['iconBasePath']) ?: '';
+        $configuration['lat'] = !empty($configuration['lat']) ?: '';
+        $configuration['lon'] = !empty($configuration['lon']) ?: '';
+        $configuration['center'] = !empty($configuration['center']) ?: false;
+
         $code = "
         <script>
                 if (undefined === gmapConfig) {
