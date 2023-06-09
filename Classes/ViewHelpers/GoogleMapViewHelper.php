@@ -161,12 +161,12 @@ class GoogleMapViewHelper extends AbstractViewHelper
      */
     private function buildJsCode($requestUri, $streamUri, $markers, $configuration, $mapId, $fitOnClick)
     {
-        $configuration['requestId'] = !empty($configuration['requestId']) ?: '';
-        $configuration['pagination'] = !empty($configuration['pagination']) ?: '';
-        $configuration['iconBasePath'] = !empty($configuration['iconBasePath']) ?: '';
-        $configuration['lat'] = !empty($configuration['lat']) ?: '';
-        $configuration['lon'] = !empty($configuration['lon']) ?: '';
-        $configuration['center'] = !empty($configuration['center']) ?: false;
+        $configuration['requestId'] = !empty($configuration['requestId']) ? $configuration['requestId'] : '';
+        $configuration['pagination'] = !empty($configuration['pagination']) ? $configuration['pagination']: '';
+        $configuration['iconBasePath'] = !empty($configuration['iconBasePath']) ? $configuration['iconBasePath']: '';
+        $configuration['lat'] = !empty($configuration['lat']) ? $configuration['lat']: '';
+        $configuration['lon'] = !empty($configuration['lon']) ? $configuration['lon']: '';
+        $configuration['center'] = !empty($configuration['center']) ? $configuration['center']: false;
 
         $code = "
         <script>
