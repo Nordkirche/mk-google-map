@@ -55,6 +55,7 @@ class GoogleMapViewHelper extends AbstractViewHelper
             'configuration'	=> $this->getConfiguration(),
             'mapId'			=> $mapId,
             'fitOnClick'    => $this->getFitOnClick(),
+            'settings'      => GeneralUtility::removeDotsFromTS($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_nkgooglemap_pi1.']['settings.']),
             'jsCode'        => $this->buildJsCode(
                                     $this->getRequestUri(),
                                     $this->getStreamUri(),
