@@ -48,6 +48,8 @@ class GoogleMapViewHelper extends AbstractViewHelper
         // Unique identifier
         $mapId = uniqid();
 
+        $settings = !empty($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_nkgooglemap_pi1.']['settings.']) ? GeneralUtility::removeDotsFromTS($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_nkgooglemap_pi1.']['settings.']) : [];
+
         $view->assignMultiple([
             'requestUri' 	=> $this->getRequestUri(),
             'streamUri'     => $this->getStreamUri(),
@@ -55,7 +57,7 @@ class GoogleMapViewHelper extends AbstractViewHelper
             'configuration'	=> $this->getConfiguration(),
             'mapId'			=> $mapId,
             'fitOnClick'    => $this->getFitOnClick(),
-            'settings'      => GeneralUtility::removeDotsFromTS($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_nkgooglemap_pi1.']['settings.']),
+            'settings'      => $settings,
             'jsCode'        => $this->buildJsCode(
                                     $this->getRequestUri(),
                                     $this->getStreamUri(),
