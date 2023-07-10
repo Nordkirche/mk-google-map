@@ -7,19 +7,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Site\Entity\Site;
-use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\TypoScript\TemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\RootlineUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
-use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
-
 
 class MapMarkerMiddleware implements MiddlewareInterface
 {
@@ -32,8 +25,6 @@ class MapMarkerMiddleware implements MiddlewareInterface
         $uri = $normalizedParams->getRequestUri();
 
         if (strpos($uri, '/marker') === 0) {
-
-            $this->initTSFE($request);
 
             $data = [];
             $supportedObjects = [];
@@ -94,30 +85,4 @@ class MapMarkerMiddleware implements MiddlewareInterface
         }
         return $handler->handle($request);
     }
-
-    /**
-     * @param $request
-     * @throws \TYPO3\CMS\Extbase\Object\Exception
-     */
-    protected function initTSFE($request)
-    {
-        if(!isset($GLOBALS['TSFE']) || !is_object($GLOBALS['TSFE']) || !$GLOBALS['TSFE'] instanceof TypoScriptFrontendController) {
-            $site = $request->getAttribute('site', null);
-            /** @var ObjectManager $objectManager */
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            $lang = $site->getDefaultLanguage();
-            $siteLanguage = $objectManager->get(SiteLanguage::class, $lang->getLanguageId(), $lang->getLocale(), $lang->getBase(), []);
-            /** @var TypoScriptFrontendController $TSFE */
-            $TSFE = $objectManager->get(
-                TypoScriptFrontendController::class,
-                GeneralUtility::makeInstance(Context::class),
-                $site,
-                $siteLanguage,
-                GeneralUtility::_GP('no_cache'),
-                GeneralUtility::_GP('cHash')
-            );
-            $GLOBALS['TSFE'] = $TSFE;
-        }
-    }
-
 }

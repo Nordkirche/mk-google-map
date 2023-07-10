@@ -4,7 +4,7 @@ defined('TYPO3_MODE') || die('Access denied.');
 
 call_user_func(
     function () {
-        if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tx_nkgooglemaps'])) {
+        if (!isset($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tx_nkgooglemaps']) || !is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tx_nkgooglemaps'])) {
             $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tx_nkcbase'] = [];
         }
 

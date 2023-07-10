@@ -10,7 +10,7 @@
  * "version" and "dependencies" must not be touched!
  ***************************************************************/
 
-$EM_CONF[$_EXTKEY] = [
+$EM_CONF['nk_google_map'] = [
     'title' => 'Google Maps',
     'description' => '',
     'category' => 'plugin',
@@ -21,10 +21,10 @@ $EM_CONF[$_EXTKEY] = [
     'uploadfolder' => '0',
     'createDirs' => '',
     'clearCacheOnLoad' => 0,
-    'version' => '10.4.0',
+    'version' => '11.5.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '10.4.0-10.4.99',
+            'typo3' => '10.4.0-11.5.99',
         ],
         'conflicts' => [],
         'suggests' => [],
