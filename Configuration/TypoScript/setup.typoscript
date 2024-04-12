@@ -20,13 +20,16 @@ plugin.tx_nkgooglemap_pi1 {
     }
     settings {
     }
+    _CSS_DEFAULT_STYLE (
+        .gmap-canvas-container > .map { height: 300px; width: 300px }
+    )
 }
 
 page {
     includeJSFooterlibs {
         gmapsApi = https://maps.googleapis.com/maps/api/js?key={$plugin.tx_nkgooglemap_pi1.googleMapsApiKey}
         gmapsApi.external = 1
-        jquery = https://code.jquery.com/jquery-3.6.0.min.js
+        jquery = https://code.jquery.com/jquery-3.7.1.min.js
         jquery.external = 1
 
     }
@@ -35,3 +38,11 @@ page {
         nk_google_map_app = EXT:nk_google_map/Resources/Public/JavaScript/app.js
     }
 }
+
+["{$plugin.tx_nkgooglemap_pi1.googleMapsApi}" != "1"]
+page.includeJSFooterlibs.gmapsApi >
+[global]
+
+["{$plugin.tx_nkgooglemap_pi1.jquery}" != "1"]
+page.includeJSFooterlibs.jquery >
+[global]

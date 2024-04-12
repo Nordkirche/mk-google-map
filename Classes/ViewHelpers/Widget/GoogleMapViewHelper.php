@@ -2,6 +2,8 @@
 
 namespace Nordkirche\NkGoogleMap\ViewHelpers\Widget;
 
+use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetViewHelper;
+use Nordkirche\NkGoogleMap\ViewHelpers\Widget\Controller\GoogleMapController;
 /**
  * This file is part of the TYPO3 CMS project.
  *
@@ -14,15 +16,14 @@ namespace Nordkirche\NkGoogleMap\ViewHelpers\Widget;
  *
  * The TYPO3 project - inspiring people to share!
  */
-
 /**
  * This ViewHelper renders a google map
  */
-class GoogleMapViewHelper extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetViewHelper
+class GoogleMapViewHelper extends AbstractWidgetViewHelper
 {
 
     /**
-     * @var \Nordkirche\NkGoogleMap\ViewHelpers\Widget\Controller\GoogleMapController
+     * @var GoogleMapController
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $controller;

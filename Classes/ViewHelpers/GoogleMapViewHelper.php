@@ -1,7 +1,13 @@
 <?php
 namespace Nordkirche\NkGoogleMap\ViewHelpers;
 
+use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
+use Psr\Log\LoggerAwareInterface;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -17,7 +23,7 @@ class GoogleMapViewHelper extends AbstractViewHelper
      * @var array
      */
     protected $configuration = [
-        'iconBasePath' => '/typo3conf/ext/nkc_base/Resources/Public/MapIcons/',
+        'iconBasePath' => 'EXT:nkc_base/Resources/Public/MapIcons/',
         'style' => ''
     ];
 
@@ -75,7 +81,7 @@ class GoogleMapViewHelper extends AbstractViewHelper
      */
     private function mergeConfiguration()
     {
-        \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule(
+        ArrayUtility::mergeRecursiveWithOverrule(
             $this->configuration,
             (array)$this->arguments['configuration'],
             true
@@ -84,7 +90,7 @@ class GoogleMapViewHelper extends AbstractViewHelper
 
 
     /**
-     * @return mixed|\Psr\Log\LoggerAwareInterface|\TYPO3\CMS\Core\SingletonInterface|StandaloneView
+     * @return mixed|LoggerAwareInterface|SingletonInterface|StandaloneView
      * @throws \Exception
      */
     private function getStandaloneView()
@@ -166,7 +172,7 @@ class GoogleMapViewHelper extends AbstractViewHelper
     {
         $configuration['requestId'] = !empty($configuration['requestId']) ? $configuration['requestId'] : '';
         $configuration['pagination'] = !empty($configuration['pagination']) ? $configuration['pagination']: '';
-        $configuration['iconBasePath'] = !empty($configuration['iconBasePath']) ? $configuration['iconBasePath']: '';
+        $configuration['iconBasePath'] = !empty($configuration['iconBasePath']) ? PathUtility::getPublicResourceWebPath($configuration['iconBasePath']) : '';
         $configuration['lat'] = !empty($configuration['lat']) ? $configuration['lat']: '';
         $configuration['lon'] = !empty($configuration['lon']) ? $configuration['lon']: '';
         $configuration['center'] = !empty($configuration['center']) ? $configuration['center']: false;

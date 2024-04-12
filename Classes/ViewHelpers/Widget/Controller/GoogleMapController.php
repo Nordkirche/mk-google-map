@@ -2,7 +2,9 @@
 
 namespace Nordkirche\NkGoogleMap\ViewHelpers\Widget\Controller;
 
-class GoogleMapController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController
+use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
+class GoogleMapController extends AbstractWidgetController
 {
 
     /**
@@ -86,7 +88,7 @@ class GoogleMapController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCon
      */
     public function initializeAction()
     {
-        \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule(
+        ArrayUtility::mergeRecursiveWithOverrule(
             $this->configuration,
             (array)$this->widgetConfiguration['configuration'],
             true

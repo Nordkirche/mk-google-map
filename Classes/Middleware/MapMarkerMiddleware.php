@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Nordkirche\NkGoogleMap\Middleware;
 
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -28,31 +29,21 @@ class MapMarkerMiddleware implements MiddlewareInterface
 
             $data = [];
             $supportedObjects = [];
+            $markerResult = '';
 
-            /** @var Site $site */
-            $site = $request->getAttribute('site');
-            /** @var RootlineUtility $rootlineUtility */
-            $rootlineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $site->getRootPageId());
-            $rootline = $rootlineUtility->get();
-            /** @var TemplateService $templateService */
-            $templateService = GeneralUtility::makeInstance(TemplateService::class);
-            $templateService->tt_track = 0;
-            $templateService->runThroughTemplates($rootline);
-            $templateService->generateConfig();
-
-            $typoScriptService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\TypoScript\TypoScriptService::class);
-            $tsConfig = $typoScriptService->convertTypoScriptArrayToPlainArray($templateService->setup);
+            $tsConfig = $this->getTsConfig($request);
 
             $items = GeneralUtility::trimExplode(',',  (string)$request->getQueryParams()['items']);
 
-            $config = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['nk_google_map'];
+            $config = !empty($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['nk_google_map']) ? $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['nk_google_map'] : [];
+
             foreach(GeneralUtility::trimExplode(',',  (string)$config['config_mapping']) as $mapping) {
-                list($objectType, $className) = GeneralUtility::trimExplode(':', $mapping);
+                [$objectType, $className] = GeneralUtility::trimExplode(':', $mapping);
                 $supportedObjects[$objectType] = $className;
             }
 
             foreach($items as $item) {
-                list($object, $id) = GeneralUtility::trimExplode(':', $item);
+                [$object, $id] = GeneralUtility::trimExplode(':', $item);
                 if ($object && $id) {
                     if (isset($supportedObjects[$object])) {
                         $data[$object][] = $id;
@@ -60,7 +51,6 @@ class MapMarkerMiddleware implements MiddlewareInterface
                 }
             }
 
-            $markerResult = '';
             // Retrieve objects
             foreach($data as $object => $items) {
                 try {
@@ -71,7 +61,7 @@ class MapMarkerMiddleware implements MiddlewareInterface
                     $controller = GeneralUtility::makeInstance($className);
                     $markerResult .= $controller->retrieveMarkerInfo($items, $tsConfig);
                 } catch (\Exception $e) {
-                    $markerResult.=$e->getMessage();
+                    $markerResult .= $e->getMessage();
                 }
             }
 
@@ -84,5 +74,30 @@ class MapMarkerMiddleware implements MiddlewareInterface
                 ->withStatus(200);
         }
         return $handler->handle($request);
+    }
+
+
+    /**
+     * @param $request
+     * @return array
+     */
+
+    private function getTsConfig($request)
+    {
+        /** @var Site $site */
+        $site = $request->getAttribute('site');
+
+        /** @var RootlineUtility $rootlineUtility */
+        $rootlineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $site->getRootPageId());
+        $rootline = $rootlineUtility->get();
+
+        /** @var TemplateService $templateService */
+        $templateService = GeneralUtility::makeInstance(TemplateService::class);
+        $templateService->tt_track = 0;
+        $templateService->runThroughTemplates($rootline);
+        $templateService->generateConfig();
+
+        $typoScriptService = GeneralUtility::makeInstance(TypoScriptService::class);
+        return $typoScriptService->convertTypoScriptArrayToPlainArray($templateService->setup);
     }
 }
