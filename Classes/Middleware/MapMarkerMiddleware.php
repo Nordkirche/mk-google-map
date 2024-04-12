@@ -1,9 +1,9 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Nordkirche\NkGoogleMap\Middleware;
 
-use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -12,6 +12,7 @@ use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\TypoScript\TemplateService;
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\RootlineUtility;
 
@@ -21,28 +22,26 @@ class MapMarkerMiddleware implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler
     ): ResponseInterface {
-
         $normalizedParams = $request->getAttribute('normalizedParams');
         $uri = $normalizedParams->getRequestUri();
 
-        if (strpos($uri, '/marker') === 0) {
-
+        if (str_starts_with($uri, '/marker')) {
             $data = [];
             $supportedObjects = [];
             $markerResult = '';
 
             $tsConfig = $this->getTsConfig($request);
 
-            $items = GeneralUtility::trimExplode(',',  (string)$request->getQueryParams()['items']);
+            $items = GeneralUtility::trimExplode(',', (string)$request->getQueryParams()['items']);
 
             $config = !empty($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['nk_google_map']) ? $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['nk_google_map'] : [];
 
-            foreach(GeneralUtility::trimExplode(',',  (string)$config['config_mapping']) as $mapping) {
+            foreach (GeneralUtility::trimExplode(',', (string)$config['config_mapping']) as $mapping) {
                 [$objectType, $className] = GeneralUtility::trimExplode(':', $mapping);
                 $supportedObjects[$objectType] = $className;
             }
 
-            foreach($items as $item) {
+            foreach ($items as $item) {
                 [$object, $id] = GeneralUtility::trimExplode(':', $item);
                 if ($object && $id) {
                     if (isset($supportedObjects[$object])) {
@@ -52,7 +51,7 @@ class MapMarkerMiddleware implements MiddlewareInterface
             }
 
             // Retrieve objects
-            foreach($data as $object => $items) {
+            foreach ($data as $object => $items) {
                 try {
                     $className = $supportedObjects[$object];
                     if (substr($className, 0, 1) == '\\') {
@@ -77,12 +76,10 @@ class MapMarkerMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-
     /**
      * @param $request
      * @return array
      */
-
     private function getTsConfig($request)
     {
         /** @var Site $site */

@@ -2,11 +2,11 @@
 
 namespace Nordkirche\NkGoogleMap\ViewHelpers\Widget\Controller;
 
-use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
+use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController;
+
 class GoogleMapController extends AbstractWidgetController
 {
-
     /**
      * @var string
      */
@@ -27,7 +27,7 @@ class GoogleMapController extends AbstractWidgetController
      */
     protected $configuration = [
         'iconBasePath' => '/typo3conf/ext/nkc_base/Resources/Public/MapIcons/',
-        'style' => ''
+        'style' => '',
     ];
 
     /**
@@ -110,7 +110,7 @@ class GoogleMapController extends AbstractWidgetController
             'configuration'	=> $this->getConfiguration(),
             'mapId'			=> $mapId,
             'fitOnClick'    => $this->getFitOnClick(),
-            'jsCode'        => $this->buildJsCode($this->getRequestUri(), $this->getStreamUri(), $this->getMarkerJson(), $this->getConfiguration(), $mapId, $this->getFitOnClick())
+            'jsCode'        => $this->buildJsCode($this->getRequestUri(), $this->getStreamUri(), $this->getMarkerJson(), $this->getConfiguration(), $mapId, $this->getFitOnClick()),
         ]);
     }
 
@@ -149,7 +149,7 @@ class GoogleMapController extends AbstractWidgetController
                 gmapConfig['$mapId']['center']['lon'] = '$configuration[lon]';
             ";
         } else {
-            if ($configuration['center']== '2') {
+            if ($configuration['center'] == '2') {
                 $code .= "gmapConfig['$mapId']['center']['mode'] = 'user';";
             } else {
                 $code .= "gmapConfig['$mapId']['center']['mode'] = 'auto';";

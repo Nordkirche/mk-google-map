@@ -1,6 +1,7 @@
 <?php
 
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
+
 defined('TYPO3') || die('Access denied.');
 
 call_user_func(
@@ -13,9 +14,9 @@ call_user_func(
             $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['tx_nkgooglemaps'] = [
                 'frontend' => VariableFrontend::class,
                 'options' => [
-                    'defaultLifetime' => 86400 * 2
+                    'defaultLifetime' => 86400 * 2,
                 ],
-                'groups' => ['nk_google_map']
+                'groups' => ['nk_google_map'],
             ];
         }
 

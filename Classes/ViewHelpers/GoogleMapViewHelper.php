@@ -1,13 +1,12 @@
 <?php
+
 namespace Nordkirche\NkGoogleMap\ViewHelpers;
 
-use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Utility\ArrayUtility;
 use Psr\Log\LoggerAwareInterface;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -24,12 +23,9 @@ class GoogleMapViewHelper extends AbstractViewHelper
      */
     protected $configuration = [
         'iconBasePath' => 'EXT:nkc_base/Resources/Public/MapIcons/',
-        'style' => ''
+        'style' => '',
     ];
 
-    /**
-     * @return void
-     */
     public function initializeArguments()
     {
         $this->registerArgument('requestUri', 'string', 'Request Uri', false, '');
@@ -65,20 +61,18 @@ class GoogleMapViewHelper extends AbstractViewHelper
             'fitOnClick'    => $this->getFitOnClick(),
             'settings'      => $settings,
             'jsCode'        => $this->buildJsCode(
-                                    $this->getRequestUri(),
-                                    $this->getStreamUri(),
-                                    $this->getMarkerJson(),
-                                    $this->getConfiguration(),
-                                    $mapId,
-                                    $this->getFitOnClick())
+                $this->getRequestUri(),
+                $this->getStreamUri(),
+                $this->getMarkerJson(),
+                $this->getConfiguration(),
+                $mapId,
+                $this->getFitOnClick()
+            ),
         ]);
 
         return $view->render();
     }
 
-    /**
-     * @return void
-     */
     private function mergeConfiguration()
     {
         ArrayUtility::mergeRecursiveWithOverrule(
@@ -87,7 +81,6 @@ class GoogleMapViewHelper extends AbstractViewHelper
             true
         );
     }
-
 
     /**
      * @return mixed|LoggerAwareInterface|SingletonInterface|StandaloneView
@@ -171,11 +164,11 @@ class GoogleMapViewHelper extends AbstractViewHelper
     private function buildJsCode($requestUri, $streamUri, $markers, $configuration, $mapId, $fitOnClick)
     {
         $configuration['requestId'] = !empty($configuration['requestId']) ? $configuration['requestId'] : '';
-        $configuration['pagination'] = !empty($configuration['pagination']) ? $configuration['pagination']: '';
+        $configuration['pagination'] = !empty($configuration['pagination']) ? $configuration['pagination'] : '';
         $configuration['iconBasePath'] = !empty($configuration['iconBasePath']) ? PathUtility::getPublicResourceWebPath($configuration['iconBasePath']) : '';
-        $configuration['lat'] = !empty($configuration['lat']) ? $configuration['lat']: '';
-        $configuration['lon'] = !empty($configuration['lon']) ? $configuration['lon']: '';
-        $configuration['center'] = !empty($configuration['center']) ? $configuration['center']: false;
+        $configuration['lat'] = !empty($configuration['lat']) ? $configuration['lat'] : '';
+        $configuration['lon'] = !empty($configuration['lon']) ? $configuration['lon'] : '';
+        $configuration['center'] = !empty($configuration['center']) ? $configuration['center'] : false;
 
         $code = "
         <script>
@@ -201,7 +194,7 @@ class GoogleMapViewHelper extends AbstractViewHelper
                 gmapConfig['$mapId']['center']['lon'] = '$configuration[lon]';
             ";
         } else {
-            if ($configuration['center']== '2') {
+            if ($configuration['center'] == '2') {
                 $code .= "gmapConfig['$mapId']['center']['mode'] = 'user';";
             } else {
                 $code .= "gmapConfig['$mapId']['center']['mode'] = 'auto';";
