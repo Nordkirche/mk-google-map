@@ -59,6 +59,7 @@ class MapMarkerMiddleware implements MiddlewareInterface
                         $className = substr($className, 1);
                     }
                     $controller = GeneralUtility::makeInstance($className);
+                    $controller->setMiddleWareRequest($request);
                     $markerResult .= $controller->retrieveMarkerInfo($items, $tsConfig);
                 } catch (\Exception $e) {
                     $markerResult .= $e->getMessage();
